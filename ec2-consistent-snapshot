@@ -464,6 +464,8 @@ sub mysql_lock {
   # as this can interfere with long-running queries on the slaves.
   $mysql_dbh->do(q{ SET SQL_LOG_BIN=0 }) unless $Noaction;
 
+  $mysql_dbh->do(q{ STOP SLAVE }) unless $Noaction;
+
   # Try a flush first without locking so the later flush with lock
   # goes faster.  This may not be needed as it seems to interfere with
   # some statements anyway.
@@ -502,6 +504,8 @@ sub mysql_lock {
       $mysql_dbh->selectrow_array(q{  SHOW MASTER STATUS  })
       unless $mysql_logfile;
   }
+
+  $mysql_dbh->do(q{ START SLAVE }) unless $Noaction;
 
   $mysql_dbh->do(q{ SET SQL_LOG_BIN=1 }) unless $Noaction;
 
