@@ -400,7 +400,12 @@ sub mongo_unlock {
 sub mongo_stop {
   $Debug and warn "$Prog: ", scalar localtime, ": mongo stop\n";
 
-  my $result = system($mongo_init_script, 'stop');
+  my $result = 1;
+  if (-e $mongo_init_script ) {
+     $result=system($mongo_init_script, 'stop');
+  }else{
+     $result=system('stop', 'mongod');
+  }
 
   if ( $result != 0 ) {
     die "$Prog: Unable to stop mongod: $? $!";
@@ -412,7 +417,12 @@ sub mongo_stop {
 sub mongo_start {
   $Debug and warn "$Prog: ", scalar localtime, ": mongo start\n";
 
-  my $result = system($mongo_init_script, 'start');
+  my $result = 1;
+  if (-e $mongo_init_script ) {
+    $result=system($mongo_init_script, 'start');
+  }else{
+    $result=system('start', 'mongod');
+  }
 
   if ( $result != 0 ) {
     warn "$Prog: Unable to start mongod: $? $!";
